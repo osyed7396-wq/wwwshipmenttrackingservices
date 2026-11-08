@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FreightTrack — Shipment Tracking Platform</title>
+<style>
+:root{--ink:#1e1b4b;--side:#2e2a8c;--side2:#3b37a8;--acc:#4f46e5;--bg:#f4f5fb;--sf:#fff;--sf2:#f8f9fd;--bd:#e4e6f2;--tx:#1f2340;--mu:#6b7194;--ok:#16a34a;--wa:#d97706;--er:#dc2626;--in:#2563eb;--tl:#0d9488;--sh:0 6px 24px rgba(30,27,75,.07);--f:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;--m:Consolas,Menlo,monospace;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1020;--sf:#171a30;--sf2:#1d2140;--bd:#2a2f55;--tx:#eceefb;--mu:#9aa0c9;--sh:0 6px 24px rgba(0,0,0,.4)}}
+:root[data-theme="dark"]{--bg:#0e1020;--sf:#171a30;--sf2:#1d2140;--bd:#2a2f55;--tx:#eceefb;--mu:#9aa0c9;--sh:0 6px 24px rgba(0,0,0,.4)}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);display:flex;min-height:100vh;font-size:14px}
+aside{width:248px;background:linear-gradient(180deg,var(--side),var(--ink));color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;flex-shrink:0;display:flex;flex-direction:column;gap:4px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;padding:4px 10px 18px}
+.logo i{width:34px;height:34px;border-radius:9px;background:#fff;color:var(--side);display:grid;place-items:center;font-style:normal;font-size:18px}
+.sec{font-size:10.5px;letter-spacing:1.2px;opacity:.55;padding:14px 10px 6px;text-transform:uppercase}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:9px;cursor:pointer;opacity:.85;border:0;background:none;color:#fff;font:inherit;width:100%;text-align:left}
+.nav:hover{background:rgba(255,255,255,.08)}.nav.on{background:rgba(255,255,255,.16);opacity:1;font-weight:600}
+.nav b{font-size:11px;background:rgba(255,255,255,.18);border-radius:10px;padding:1px 8px}
+.foot{margin-top:auto;font-size:12px;opacity:.6;padding:10px}
+main{flex:1;min-width:0;padding:22px 28px 40px}
+.top{display:flex;gap:14px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.top h1{font-size:22px;letter-spacing:-.3px;margin-right:auto}.top h1 small{display:block;font-size:12.5px;color:var(--mu);font-weight:400;margin-top:2px}
+.srch{position:relative;flex:1 1 360px;max-width:520px}
+.srch input{width:100%;padding:12px 14px 12px 40px;border:1px solid var(--bd);border-radius:11px;background:var(--sf);color:var(--tx);font:inherit;outline:none;box-shadow:var(--sh)}
+.srch input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(79,70,229,.15)}.srch:before{content:"⌕";position:absolute;left:14px;top:8px;font-size:20px;color:var(--mu)}
+.btn{border:1px solid var(--bd);background:var(--sf);color:var(--tx);padding:10px 14px;border-radius:10px;cursor:pointer;font:inherit;font-weight:600}.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.kpi{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px;box-shadow:var(--sh)}
+.kpi span{font-size:11.5px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;font-weight:600}.kpi b{display:block;font-size:28px;margin-top:4px}.kpi em{font-style:normal;font-size:12px;color:var(--mu)}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
+.tabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--bd);overflow-x:auto}
+.tab{padding:14px 12px;border:0;background:none;color:var(--mu);font:inherit;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab.on{color:var(--acc);border-color:var(--acc)}.tab i{font-style:normal;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:0 7px;font-size:11px;margin-left:5px}
+.bar{display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--bd)}
+.chip{padding:6px 13px;border-radius:20px;border:1px solid var(--bd);background:var(--sf2);color:var(--mu);cursor:pointer;font:inherit;font-size:12.5px;font-weight:600}.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.sc{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:900px}
+th{text-align:left;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:var(--mu);padding:11px 16px;background:var(--sf2);white-space:nowrap}
+td{padding:13px 16px;border-top:1px solid var(--bd);vertical-align:middle}tr.r{cursor:pointer}tr.r:hover td{background:var(--sf2)}
+.tn{font-family:var(--m);font-weight:700;font-size:13px}.sub{font-size:12px;color:var(--mu);margin-top:2px}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.m-FCL{background:#e0e7ff;color:#3730a3}.m-LCL{background:#ccfbf1;color:#115e59}.m-AIR{background:#fef3c7;color:#92400e}
+.s-pend{background:#e5e7eb;color:#374151}.s-tran{background:#dbeafe;color:#1d4ed8}.s-cust{background:#fef3c7;color:#92400e}.s-ok{background:#dcfce7;color:#166534}.s-ex{background:#fee2e2;color:#991b1b}
+.pg{width:110px;height:6px;background:var(--bd);border-radius:6px;overflow:hidden}.pg div{height:100%;background:var(--acc);border-radius:6px}
+.empty{padding:48px;text-align:center;color:var(--mu)}
+#ov{position:fixed;inset:0;background:rgba(10,10,30,.5);display:none;z-index:20}#ov.on{display:block}
+#dr{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:21;transform:translateX(100%);transition:transform .25s;overflow-y:auto;padding:calc(22px + env(safe-area-inset-top,0px)) 24px 30px;box-shadow:var(--shadow-lg,-10px 0 40px rgba(0,0,0,.3))}#dr.on{transform:none}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px}.dh h2{font-family:var(--m);font-size:19px}
+.route{display:flex;align-items:center;gap:12px;background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px;margin:14px 0}
+.route div{flex:1}.route small{color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.6px}.route b{display:block;font-size:15px;margin-top:2px}
+.route .ln{flex:1.2;height:2px;background:repeating-linear-gradient(90deg,var(--acc) 0 6px,transparent 6px 11px);position:relative;text-align:center}.route .ln span{position:absolute;left:50%;top:-12px;transform:translateX(-50%);background:var(--sf);padding:0 6px;font-size:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}.grid div{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}.grid small{display:block;color:var(--mu);font-size:10.5px;text-transform:uppercase;letter-spacing:.6px}.grid b{font-size:13px;word-break:break-word}
+.tl{border-left:2px solid var(--bd);margin:6px 0 0 8px;padding-left:20px}.ev{position:relative;padding-bottom:18px}.ev:before{content:"";position:absolute;left:-28px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--bd);border:2px solid var(--bg)}
+.ev.d:before{background:var(--ok)}.ev.c:before{background:var(--acc);box-shadow:0 0 0 4px rgba(79,70,229,.25)}.ev.x:before{background:var(--er)}.ev.p{opacity:.5}.ev b{font-size:13.5px}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);margin:18px 0 8px}
+.panel{background:var(--sf);border:1px solid var(--bd);border-radius:16px;box-shadow:var(--sh);padding:0 22px 22px;margin-bottom:20px}
+.ptabs{display:flex;gap:6px;border-bottom:1px solid var(--bd);margin-bottom:18px}
+.pt{padding:16px 18px 13px;background:none;border:0;border-bottom:3px solid transparent;color:var(--mu);font:inherit;font-weight:700;cursor:pointer;font-size:15px}.pt.on{color:var(--acc);border-color:var(--acc)}
+.tf{display:grid;grid-template-columns:1.6fr 1fr 1fr auto;gap:14px;align-items:end}
+.fl label{display:block;font-size:11.5px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.fl input,.fl select{width:100%;padding:13px 14px;border:1px solid var(--bd);border-radius:11px;background:var(--sf2);color:var(--tx);font:inherit;outline:none}
+.fl input:focus,.fl select:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+.go{padding:13px 26px;border:0;border-radius:11px;background:var(--acc);color:#fff;font:inherit;font-weight:700;cursor:pointer;height:48px;white-space:nowrap}.go:hover{filter:brightness(1.1)}
+.hint{text-align:center;color:var(--mu);font-size:12.5px;margin:14px 0 10px}.hint code{background:var(--sf2);padding:1px 6px;border-radius:5px;font-family:var(--m);color:var(--acc)}
+.rec{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--mu)}
+.alert{display:none;margin-top:14px;padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600}.alert.e{background:#fee2e2;color:#991b1b}.alert.i{background:#dbeafe;color:#1d4ed8}
+.qt{margin-top:22px;border:1px dashed var(--bd);background:var(--sf2);border-radius:14px;padding:18px;position:relative}
+.qt>span{position:absolute;top:-11px;left:16px;background:var(--tl);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.2px;padding:4px 12px;border-radius:20px}
+.qt h4{font-size:15px;margin-bottom:2px}.qt p{color:var(--mu);font-size:12.5px;margin-bottom:12px}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.sm{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px;cursor:pointer;transition:.15s}.sm:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:var(--sh)}
+.sm .tn{display:block;margin:8px 0 3px}
+.ct{width:100%;border-collapse:collapse;min-width:0}.ct td,.ct th{padding:9px 10px;font-size:12.5px;border-top:1px solid var(--bd);text-align:left}.ct th{background:none;color:var(--mu)}
+#mdl{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(760px,94vw);max-height:90vh;overflow-y:auto;background:var(--bg);border:1px solid var(--bd);border-radius:18px;padding:22px;z-index:22;display:none;box-shadow:0 20px 60px rgba(0,0,0,.45)}#mdl.on{display:block}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.fl textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:11px;background:var(--sf2);color:var(--tx);font:inherit}
+.sb{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}.sb h3{margin:0}
+canvas.sig{width:100%;height:120px;background:#fff;border:1px dashed var(--mu);border-radius:10px;touch-action:none;cursor:crosshair;display:block}
+.lg{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--acc);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.sigs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.sgc{background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:10px}.sgc small{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--mu)}.sgc img{width:100%;height:70px;object-fit:contain;background:#fff;border-radius:6px;margin-top:6px;border:1px solid var(--bd)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ok);color:#fff;padding:12px 20px;border-radius:12px;font-weight:700;z-index:40;box-shadow:var(--sh)}
+@media(max-width:700px){.fg,.sigs{grid-template-columns:1fr}}
+.imp{margin-top:20px;border-top:1px solid var(--bd);padding-top:16px}
+.dz{display:flex;flex-direction:column;align-items:center;gap:4px;padding:28px;border:2px dashed var(--bd);border-radius:14px;background:var(--sf2);cursor:pointer;text-align:center}.dz:hover,.dz.ov{border-color:var(--acc);background:rgba(79,70,229,.07)}.dz span{color:var(--mu);font-size:12.5px}
+.xr{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-top:12px}.xr .fl{flex:1 1 260px}.xl{margin-top:12px;font-size:13px;font-weight:600;color:var(--mu)}
+.live{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ok);margin-right:5px;animation:pl 1.4s infinite}@keyframes pl{50%{opacity:.25}}
+@media(max-width:900px){.tf{grid-template-columns:1fr}.go{width:100%}}
+@media(max-width:900px){body{display:block}aside{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap;padding:12px}.sec,.foot{display:none}.logo{padding:4px 10px}.nav{width:auto}main{padding:16px}}
+@media print{.panel,aside,.top,.bar,.tabs,.kpis,#ov{display:none}}
+</style><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Control-tower professional skin ===== */
+:root{--f:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;--m:"JetBrains Mono",Consolas,Menlo,monospace;--acc:#3b3fd8;--bg:#e9edf7;--sf2:#f4f6fc;--bd:#d6dcee;--tx:#0b1230;--mu:#4d5679;--thb:#0f1b4d;--tht:#c7d2fe;--sh:0 1px 2px rgba(11,18,48,.06),0 10px 28px rgba(11,18,48,.09)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#080d22;--sf:#111a3e;--sf2:#16214c;--bd:#25336b;--tx:#f1f4ff;--mu:#a8b1d9;--acc:#6366f1;--thb:#0a1030}}
+:root[data-theme="dark"]{--bg:#080d22;--sf:#111a3e;--sf2:#16214c;--bd:#25336b;--tx:#f1f4ff;--mu:#a8b1d9;--acc:#6366f1;--thb:#0a1030}
+body{font-size:15px;-webkit-font-smoothing:antialiased}
+aside{background:linear-gradient(180deg,#0b1437,#112060 55%,#0b1437);box-shadow:4px 0 24px rgba(11,18,48,.25)}
+.logo{font-size:20px;letter-spacing:-.4px}.logo i{background:linear-gradient(135deg,#38bdf8,#6366f1);color:#fff;box-shadow:0 6px 16px rgba(56,189,248,.4)}
+.nav{font-weight:500;opacity:.9}.nav.on{background:rgba(255,255,255,.13);box-shadow:inset 3px 0 0 #38bdf8}
+.foot{opacity:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:12px;line-height:1.55;color:#dbe4ff}.foot b{color:#fff;display:block}
+.foot .live{margin-right:6px}
+main{padding:24px 32px 48px}
+.top h1{font-size:26px;font-weight:800;letter-spacing:-.6px}
+.srch input{padding:14px 14px 14px 42px;border-width:1.5px;font-size:15px}
+.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:center;padding:28px 32px;border-radius:20px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--sh);background:radial-gradient(800px 300px at 90% -30%,rgba(56,189,248,.4),transparent),radial-gradient(600px 300px at 0 130%,rgba(99,102,241,.5),transparent),linear-gradient(120deg,#0b1437,#15296e)}
+.hero:after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:34px 34px;-webkit-mask-image:linear-gradient(90deg,transparent 20%,#000);mask-image:linear-gradient(90deg,transparent 20%,#000);pointer-events:none}
+.hero>*{position:relative;z-index:1}.hero small{letter-spacing:2px;font-weight:700;font-size:11px;color:#7dd3fc}
+.hero h2{font-size:30px;font-weight:800;letter-spacing:-.8px;margin:6px 0 6px}.hero p{color:#c7d2fe;font-size:14px;margin-bottom:16px}
+.mb{display:flex;height:10px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.12);max-width:460px}.mb i{display:block}
+.ml{display:flex;gap:18px;flex-wrap:wrap;margin-top:9px;font-size:12.5px;color:#dbe4ff}.ml i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}.ml b{color:#fff}
+.mFCL{background:#60a5fa}.mLCL{background:#2dd4bf}.mAIR{background:#fbbf24}
+.clk{display:grid;grid-template-columns:1fr 1fr;gap:10px}.clk div{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:11px 14px;backdrop-filter:blur(4px)}
+.clk small{display:block;letter-spacing:1.4px;color:#a5b4fc;font-size:10.5px}.clk b{font-family:var(--m);font-size:20px;letter-spacing:.5px}
+.kpi{position:relative;overflow:hidden;padding:18px 18px 16px 22px}.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+.kpi:after{content:var(--i);position:absolute;right:14px;top:12px;font-size:24px}
+.kpi:nth-child(1){--c:#4f46e5;--i:"📦"}.kpi:nth-child(2){--c:#0ea5e9;--i:"🧭"}.kpi:nth-child(3){--c:#06b6d4;--i:"🚢"}.kpi:nth-child(4){--c:#16a34a;--i:"✅"}.kpi:nth-child(5){--c:#dc2626;--i:"⚠️"}
+.kpi span{color:var(--mu);font-weight:700}.kpi b{font-size:36px;font-weight:800;letter-spacing:-1.2px}
+.card,.panel,.kpi{border-radius:16px}
+.panel{border-width:1.5px}.pt{font-size:15.5px}
+.go,.btn.p{background:linear-gradient(135deg,#4338ca,#0891b2);box-shadow:0 8px 20px rgba(67,56,202,.32)}
+.tab{font-size:14.5px}.tab.on{border-bottom-width:4px}
+th{background:var(--thb);color:var(--tht);padding:13px 16px;font-size:11px;position:sticky;top:0}
+td{padding:15px 16px}tr.r td:first-child{border-left:4px solid transparent}tr.r:hover td{background:rgba(79,70,229,.07)}tr.r:hover td:first-child{border-left-color:var(--acc)}
+.tn{color:var(--acc);font-weight:800}.sub{color:var(--mu)}
+.pill{padding:4px 11px;letter-spacing:.2px}.pill[class*="s-"]:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:6px}
+.pg{width:130px;height:8px}.pg div{background:linear-gradient(90deg,#4f46e5,#06b6d4)}
+.chip{font-size:13px}.sm{border-width:1.5px}
+#dr{border-left:1px solid var(--bd)}.dh h2{font-size:22px;font-weight:800}
+.route{background:linear-gradient(135deg,#0b1437,#1e3a8a);border:0;color:#fff;box-shadow:var(--sh)}.route small{color:#93c5fd}.route b{font-size:17px}.route .ln{background:repeating-linear-gradient(90deg,#38bdf8 0 6px,transparent 6px 11px)}.route .ln span{background:#14286b;border-radius:50%;padding:3px 5px}
+.ev:before{width:16px;height:16px;left:-30px;top:1px;display:grid;place-items:center;color:#fff;font-size:10px;font-weight:800}.ev.d:before{content:"✓"}.ev.x:before{content:"!"}
+.grid div{border-width:1.5px}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding:22px}.hero h2{font-size:24px}main{padding:16px}}
+@media print{.hero{display:none}}
+.seg{display:inline-flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden}.seg button{border:0;background:var(--sf2);color:var(--mu);padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}.seg button.on{background:var(--acc);color:#fff}
+#db{display:none;position:fixed;inset:3vh 3vw;background:var(--bg);border:1px solid var(--bd);border-radius:20px;z-index:24;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.5);flex-direction:column}#db.on{display:flex}
+.dbh{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(120deg,#0b1437,#15296e);color:#fff;flex-wrap:wrap}.dbh h2{font-size:20px;margin-right:auto}.dbh .btn{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.28)}
+.dbt{display:flex;gap:6px;padding:0 18px;background:var(--sf);border-bottom:1px solid var(--bd)}.dbb{flex:1;overflow-y:auto;padding:20px 22px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:16px}.bx{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px;box-shadow:var(--sh)}.bx h4{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin-bottom:12px}
+.hb{display:grid;grid-template-columns:150px 1fr 36px;gap:10px;align-items:center;margin:8px 0;font-size:13px}.hb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hb div{background:var(--sf2);border-radius:6px}.hb i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,#4f46e5,#06b6d4)}
+table.dt{width:100%;border-collapse:collapse;min-width:0}.dt th{position:static;background:none;color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.5px}.dt td,.dt th{padding:9px 10px;border-top:1px solid var(--bd);text-align:left;font-size:13px}.dt tr:first-child th{border-top:0}
+.dt tr.dr{cursor:pointer}.dt tr.dr:hover td{background:rgba(79,70,229,.07)}.dt tr.sl td{background:rgba(79,70,229,.14)}
+@media print{body.pdb aside,body.pdb main,body.pdb #ov{display:none!important}body.pdb #db{position:static;display:block!important;border:0;box-shadow:none;border-radius:0}body.pdb .dbb{overflow:visible}body.pdb .dbt,body.pdb .dbh .btn{display:none}}
+#fx{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(520px,94vw);max-height:88vh;overflow-y:auto;background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:20px;z-index:23;box-shadow:0 24px 70px rgba(0,0,0,.45)}#fx.on{display:block}
+#fx .xh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px}#fx .dz{padding:16px;gap:2px;margin-bottom:12px;font-size:14px}
+#fx details{margin-top:12px;border:1px solid var(--bd);border-radius:12px;padding:10px 12px;background:var(--sf2)}#fx summary{cursor:pointer;font-weight:600;font-size:13px}.cols{font-size:12px;color:var(--mu);line-height:1.7;margin-top:8px}
+#fx .btn{padding:9px 13px;font-size:13px}
+.sbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--sf);border:1px solid var(--bd);border-left:5px solid var(--acc);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13.5px}.sbar .btn{margin-left:auto;padding:6px 12px}
+.okc{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.4);border-radius:12px;padding:12px 14px;font-size:13px}
+.ab{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--bd)}.ab:first-child{border-top:0}.ab .btn{padding:6px 10px;font-size:12px}
+</style>
+</head><body>
+<aside>
+<div class="logo"><i>⚓</i>FreightTrack</div>
+<div class="sec">Tracking</div>
+<button class="nav on" data-m="ALL">Shipment Dashboard <b id="c-ALL"></b></button>
+<div class="sec">Freight Mode</div>
+<button class="nav" data-m="FCL">Ocean · FCL <b id="c-FCL"></b></button>
+<button class="nav" data-m="LCL">Ocean · LCL <b id="c-LCL"></b></button>
+<button class="nav" data-m="AIR">Air Freight <b id="c-AIR"></b></button>
+<div class="foot"><b><span class="live"></span>All systems operational</b>Operations Desk · Karachi<br>Hubs: Karachi · Dubai · London</div>
+</aside>
+<main>
+<section class="hero"><div><small>GLOBAL FREIGHT CONTROL TOWER</small><h2>Every shipment. One live view.</h2><p>Ocean FCL · LCL · Air Freight — tracked from booking to signed final delivery.</p><div id="mix"></div></div><div class="clk" id="clk"></div></section>
+<div class="top"><h1>Shipment Dashboard<small id="today"></small></h1>
+<div class="srch"><input id="q" placeholder="Track by tracking no., container, B/L, AWB, customer…" autocomplete="off"></div>
+<button class="btn" id="th">◐ Theme</button><button class="btn" id="xo" type="button">IMPORT DATA</button><button class="btn" id="dbo" type="button">📈 DASHBOARD &amp; REPORTS</button><button class="btn" id="rfb" type="button">🔄 Refresh</button><button class="go" style="height:auto;padding:10px 16px" onclick="regForm()">＋ Register Shipment</button><button class="btn" onclick="window.print()">🖨 Print Report</button></div>
+<section class="panel">
+<div class="ptabs"><button class="pt on" data-p="s">Single Shipment</button><button class="pt" data-p="c">Compare Multiple</button></div>
+<form class="tf" id="fs" autocomplete="off">
+<div class="fl"><label>Tracking / Reference</label><input id="tq" placeholder="e.g. PTL-2026-000001"></div>
+<div class="fl"><label>Shipment Type</label><select id="tt"><option value="">All types</option><option value="AIR|Import">Air Freight Import</option><option value="AIR|Export">Air Freight Export</option><option value="FCL|Import">Ocean Freight Import - FCL</option><option value="FCL|Export">Ocean Freight Export - FCL</option><option value="LCL|Import">Ocean Freight Import - LCL</option><option value="LCL|Export">Ocean Freight Export - LCL</option></select></div>
+<div class="fl"><label>Search Mode</label><select id="tm"><option value="any">Any field</option><option value="id">Tracking number</option><option value="eq">Container / Cargo</option><option value="ref">B/L · HBL · AWB</option><option value="cust">Customer</option><option value="route">Origin / Destination</option><option value="car">Vessel / Flight</option></select></div>
+<button class="go" type="submit">🔍 Track</button></form>
+<form class="tf" id="fc" style="display:none;grid-template-columns:1fr auto" autocomplete="off">
+<div class="fl"><label>Tracking Numbers (up to 3, comma separated)</label><input id="cq" placeholder="PTL-2026-000001, PTL-2026-000002"></div><button class="go" type="submit">⇄ Compare</button></form>
+<div id="fx" role="dialog" aria-label="Live Excel Data">
+<div class="xh"><div><h3 style="margin:0;font-size:17px;text-transform:none;letter-spacing:0;color:var(--tx)">IMPORT DATA</h3><div id="bd" style="margin-top:8px"></div></div><button class="btn" type="button" onclick="closeX()">✕</button></div>
+<label class="dz" id="dz" for="xf"><b>Drop Excel / CSV file here</b><span>or click to browse · .xlsx · .xls · .csv</span></label><input type="file" id="xf" accept=".xlsx,.xls,.csv" hidden>
+<input type="hidden" id="xm" value="replace"><div class="sub" style="margin:0 0 4px">New data <b>replaces what is shown</b>. Each day's latest upload is saved as that day's record — see <b>Daily records</b> below and the Day-wise Report.</div>
+<div class="xr"><button class="btn" id="xw" type="button">● Connect live file</button><button class="btn" id="xs" type="button" style="display:none">■ Stop live sync</button></div>
+<div class="alert" id="xn"></div><div class="xl" id="xl"></div>
+<details><summary>Paste rows from Excel instead</summary><div class="fl" style="margin-top:10px"><textarea id="xp" rows="3" placeholder="Tracking No&#9;Mode&#9;Direction&#9;Customer…"></textarea></div><div class="xr"><button class="btn" id="xi" type="button">Import pasted data</button><button class="btn" id="xt" type="button">Load sample sheet</button></div></details>
+<details><summary>Daily records (history)</summary><div id="ar" style="margin-top:10px"></div></details>
+<details><summary>Supported columns</summary><div class="cols">Tracking No · Mode (FCL / LCL / Air) · Direction · Customer · Origin · Destination · B/L or AWB · Container / Cargo · Vessel / Flight · ETD · ETA · Status. Any order; flexible names.</div></details>
+</div>
+<div class="alert" id="err"></div>
+<div class="hint">Example: <code id="exc">PTL-2026-000001</code> · <a href="#" id="clr" style="color:var(--acc);font-weight:600">Clear filters</a></div>
+<div class="rec" id="rec"></div>
+<div class="qt"><span>⚡ QUICK TEST</span><h4 id="qh">🎯 Try These Sample Tracking Numbers</h4><p>Click any card to instantly load its full shipment record — status, timeline, documents and route.</p><div class="sg" id="sg"></div></div>
+</section>
+<div class="kpis" id="kpis"></div>
+<div class="sbar" id="srcbar"></div>
+<div class="card">
+<div class="tabs" id="tabs"></div>
+<div class="bar" id="chips"></div>
+<div class="sc"><table><thead><tr><th>#</th><th>Shipment</th><th>Mode</th><th>Route</th><th>Reference</th><th>ETD → ETA</th><th>Progress</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="sc" id="xv" style="display:none"></div>
+<div class="empty" id="em" style="display:none">No shipments match your search.</div>
+</div></main>
+<div id="ov"></div><div id="dr"></div><div id="mdl"></div><div id="db"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const TODAY=new Date(new Date().toDateString());
+const MODE={FCL:"Ocean Freight · FCL",LCL:"Ocean Freight · LCL",AIR:"Air Freight"};
+const ST={sea:["Booked","Cargo Received","Departed","In Transit","Arrived","Customs Clearance","Delivered"],air:["Booked","Cargo Received","Departed","Arrived","Customs Clearance","Delivered"]};
+// id, mode, direction, customer, origin, dest, ref, equipment, carrier, etd, eta, stage, exception
+const D=[
+].map(r=>{const o={id:r[0],mode:r[1],dir:r[2],cust:r[3],from:r[4],to:r[5],ref:r[6],eq:r[7],car:r[8],etd:new Date(r[9]),eta:new Date(r[10]),st:r[11],ex:!!r[12]};
+o.seq=ST[o.mode=="AIR"?"air":"sea"];o.status=o.ex?"Exception":o.seq[o.st];o.pct=Math.round(o.st/(o.seq.length-1)*100);return o});
+const fd=d=>d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+const cls=s=>({Delivered:"s-ok",Exception:"s-ex","Customs Clearance":"s-cust",Arrived:"s-cust",Departed:"s-tran","In Transit":"s-tran"}[s]||"s-pend");
+const TABS=[["All",()=>1],["Pending",s=>s.st<2&&!s.ex],["In Transit",s=>s.st>=2&&s.status!="Arrived"&&s.status!="Customs Clearance"&&s.status!="Delivered"&&!s.ex],["Customs & Arrival",s=>["Arrived","Customs Clearance"].includes(s.status)],["Delivered",s=>s.status=="Delivered"],["Exceptions",s=>s.ex]];
+let tab=0,mode="ALL",q="",SORT="file",XV=false;
+const $=s=>document.querySelector(s);
+function match(s){const t=q.toLowerCase();return !t||[s.id,s.cust,s.ref,s.eq,s.from,s.to,s.car,MODE[s.mode]].join(" ").toLowerCase().includes(t)}
+let tf="";
+function tfm(s){if(!tf)return 1;const [m,d]=tf.split("|");return s.mode==m&&s.dir==d}
+function base(){return D.filter(s=>(mode=="ALL"||s.mode==mode)&&tfm(s)&&match(s))}
+function render(){
+ const b=base();
+ $("#today").textContent="Live overview · "+TODAY.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ ["ALL","FCL","LCL","AIR"].forEach(m=>$("#c-"+m).textContent=m=="ALL"?D.length:D.filter(s=>s.mode==m).length);
+ const act=b.filter(s=>s.status!="Delivered").length,late=b.filter(s=>s.status!="Delivered"&&s.eta<TODAY).length;
+ $("#kpis").innerHTML=[["Total Shipments",b.length,"in current view"],["Active",act,"not yet delivered"],["In Transit",b.filter(TABS[2][1]).length,"on the move"],["Delivered",b.filter(TABS[4][1]).length,Math.round(b.filter(TABS[4][1]).length/(b.length||1)*100)+"% completion"],["Delayed / Exceptions",b.filter(s=>s.ex).length+late,"need attention"]].map(k=>`<div class="kpi"><span>${k[0]}</span><b>${k[1]}</b><em>${k[2]}</em></div>`).join("");
+ $("#tabs").innerHTML=TABS.map((t,i)=>`<button class="tab ${i==tab?"on":""}" data-i="${i}">${t[0]}<i>${b.filter(t[1]).length}</i></button>`).join("");
+ $("#chips").innerHTML='<span style="color:var(--mu);font-size:12px;font-weight:600">MODE</span>'+[["ALL","All modes"],["FCL","FCL"],["LCL","LCL"],["AIR","Air"]].map(m=>`<button class="chip ${mode==m[0]?"on":""}" data-m="${m[0]}">${m[1]}</button>`).join("")+'<span style="margin-left:14px;color:var(--mu);font-size:12px;font-weight:600">ORDER</span>'+[["file","As in Excel file"],["eta","By ETA"]].map(o=>`<button class="chip ${SORT==o[0]?"on":""}" data-so="${o[0]}">${o[1]}</button>`).join("")+'<span style="margin-left:14px;color:var(--mu);font-size:12px;font-weight:600">VIEW</span>'+[["0","Tracking view"],["1","Excel sheet view"]].map(v=>`<button class="chip ${(XV?"1":"0")==v[0]?"on":""}" data-xv="${v[0]}">${v[1]}</button>`).join("");
+ const rows=b.filter(TABS[tab][1]).sort(SORT=="file"?(a,c)=>(a.ord==null?1e9:a.ord)-(c.ord==null?1e9:c.ord):(a,c)=>a.eta-c.eta);
+ $("#tb").innerHTML=rows.map(s=>`<tr class="r" data-id="${s.id}"><td style="color:var(--mu);font-weight:700">${s.ord==null?"—":s.ord+1}</td><td><div class="tn">${s.id}</div><div class="sub">${s.cust}</div></td><td><span class="pill m-${s.mode}">${s.mode=="AIR"?"✈ AIR":"🚢 "+s.mode}</span><div class="sub">${s.dir}</div></td><td>${s.from}<div class="sub">→ ${s.to}</div></td><td>${s.ref}<div class="sub">${s.eq}</div></td><td>${fd(s.etd)}<div class="sub">→ ${fd(s.eta)}</div></td><td><div class="pg"><div style="width:${s.pct}%"></div></div><div class="sub">${s.pct}%</div></td><td><span class="pill ${cls(s.status)}">${s.status}</span></td></tr>`).join("");
+ $("#em").textContent=D.length?"No shipments match your search.":"No data yet — click IMPORT DATA and upload your Excel file. It becomes your live tracking data.";$("#em").style.display=rows.length?"none":"block";xvDraw();
+}
+function open(id){
+ const s=D.find(x=>x.id==id);if(!s)return;
+ const n=s.seq.length,t0=+s.etd-6*864e5,t1=+s.eta+2*864e5;
+ const ev=s.seq.map((n_,i)=>{const done=i<=s.st,cur=i==s.st,d=new Date(t0+(t1-t0)*i/(n-1));
+  const c=s.ex&&cur?"x":cur&&n_!="Delivered"?"c":done?"d":"p";
+  return `<div class="ev ${c}"><b>${s.ex&&cur?"⚠ Exception — "+n_:n_}</b><div class="sub">${done?fd(d)+" · "+String(8+i*2).padStart(2,"0")+":"+String(i*11%60).padStart(2,"0"):"Pending · est. "+fd(d)}</div></div>`}).reverse().join("");
+ const days=Math.ceil((s.eta-TODAY)/864e5),cd=s.status=="Delivered"?"Delivered ✔":days>=0?days+" day(s) to ETA":Math.abs(days)+" day(s) past ETA";
+ const L=s.mode=="AIR"?["Origin Airport","Destination Airport","AWB","Flight"]:["Port of Loading","Port of Discharge",s.mode=="LCL"?"House B/L":"Bill of Lading","Vessel / Voyage"];
+ $("#dr").innerHTML=`<div class="dh"><div><h2>${s.id}</h2><div class="sub">${s.cust} · ${s.dir}</div></div><div><button class="btn" onclick="window.print()">🖨</button> <button class="btn" onclick="closeD()">✕</button></div></div>
+ <span class="pill m-${s.mode}">${MODE[s.mode]}</span> <span class="pill ${cls(s.status)}">${s.status}</span>
+ <div class="route"><div><small>Origin</small><b>${s.from}</b></div><div class="ln"><span>${s.mode=="AIR"?"✈":"🚢"}</span></div><div style="text-align:right"><small>Destination</small><b>${s.to}</b></div></div>
+ <div class="pg" style="width:100%;height:8px"><div style="width:${s.pct}%"></div></div><div class="sub" style="margin:6px 0 4px">${s.pct}% complete · ${cd}</div>
+ <h3>Shipment Details</h3><div class="grid">
+ <div><small>${L[2]}</small><b>${s.ref}</b></div><div><small>${s.mode=="FCL"?"Container":s.mode=="LCL"?"Cargo (CFS)":"Cargo"}</small><b>${s.eq}</b></div>
+ <div><small>${L[3]}</small><b>${s.car}</b></div><div><small>Load Type</small><b>${s.mode=="FCL"?"Full Container Load":s.mode=="LCL"?"Less than Container Load":"Air Freight"}</b></div>
+ <div><small>ETD</small><b>${fd(s.etd)}</b></div><div><small>ETA</small><b>${fd(s.eta)}</b></div>
+ <div><small>${L[0]}</small><b>${s.from}</b></div><div><small>${L[1]}</small><b>${s.to}</b></div></div>
+ ${hand(s)}<h3>Tracking History</h3><div class="tl">${ev}</div>`;
+ $("#dr").classList.add("on");$("#ov").classList.add("on");
+}
+function closeX(){$("#fx").classList.remove("on");if(!$("#dr").classList.contains("on")&&!$("#mdl").classList.contains("on"))$("#ov").classList.remove("on")}
+function closeD(){$("#db").classList.remove("on");$("#fx").classList.remove("on");$("#mdl").classList.remove("on");$("#dr").classList.remove("on");$("#ov").classList.remove("on")}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-i],[data-m],tr.r");if(!t)return;
+ if(t.dataset.i){tab=+t.dataset.i}else if(t.dataset.m){mode=t.dataset.m;document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("on",n.dataset.m==mode))}else return open(t.dataset.id);
+ render()});
+$("#ov").onclick=closeD;document.addEventListener("keydown",e=>e.key=="Escape"&&closeD());
+$("#q").addEventListener("input",e=>{q=e.target.value.trim();render()});
+$("#q").addEventListener("keydown",e=>{if(e.key=="Enter"){const m=D.filter(s=>[s.id,s.ref,s.eq].some(x=>x.toLowerCase().includes(q.toLowerCase())));if(q&&m.length==1)open(m[0].id)}});
+$("#th").onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue("--bg").trim()=="#0e1020";r.dataset.theme=d?"light":"dark"};
+/* ---- Advanced tracking panel ---- */
+const FLD={any:s=>[s.id,s.cust,s.ref,s.eq,s.from,s.to,s.car].join(" "),id:s=>s.id,eq:s=>s.eq,ref:s=>s.ref,cust:s=>s.cust,route:s=>s.from+" "+s.to,car:s=>s.car};
+function note(m,t){const e=$("#fx").classList.contains("on")?$("#xn"):$("#err");e.textContent=m;e.className="alert "+t;e.style.display=m?"block":"none"}
+function recents(){try{return JSON.parse(localStorage.getItem("ft_recent")||"[]")}catch(e){return[]}}
+function addRecent(id){try{localStorage.setItem("ft_recent",JSON.stringify([id,...recents().filter(x=>x!=id)].slice(0,5)))}catch(e){}drawRecent()}
+function drawRecent(){const r=recents().filter(i=>D.some(s=>s.id==i));$("#rec").innerHTML=r.length?"Recent: "+r.map(i=>`<button class="chip" data-r="${i}">${i}</button>`).join(""):""}
+function drawSamples(){$("#sg").innerHTML=(D.some(s=>s.smp)?["PTL-2026-000001","PTL-2026-000003","PTL-2026-000002","PTL-2026-000009"]:D.slice(0,4).map(s=>s.id)).map(i=>{const s=D.find(x=>x.id==i);return `<div class="sm" data-r="${i}"><span class="pill m-${s.mode}">${MODE[s.mode]}</span><span class="tn">${i}</span><div class="sub">${s.from} → ${s.to}</div><div style="margin-top:8px"><span class="pill ${cls(s.status)}">${s.status}</span></div></div>`}).join("")}
+function go(id){tf="";$("#tt").value="";q="";$("#q").value="";note("");addRecent(id);render();open(id)}
+$("#fs").onsubmit=e=>{e.preventDefault();const v=$("#tq").value.trim().toLowerCase();tf=$("#tt").value;note("");
+ if(!v){note("Enter a tracking number or reference to continue.","e");return}
+ const f=FLD[$("#tm").value],m=D.filter(s=>tfm(s)&&f(s).toLowerCase().includes(v));
+ if(!m.length){render();note("No shipment found for “"+$("#tq").value.trim()+"” with the selected type and search mode.","e");return}
+ if(m.length==1){go(m[0].id);return}
+ q=$("#tq").value.trim();$("#q").value=q;mode="ALL";tab=0;document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("on",n.dataset.m=="ALL"));
+ render();note(m.length+" shipments match your search — refine below or select one from the list.","i");$("#tb").scrollIntoView({behavior:"smooth",block:"center"})};
+$("#fc").onsubmit=e=>{e.preventDefault();note("");
+ const L=$("#cq").value.split(",").map(x=>x.trim().toLowerCase()).filter(Boolean).slice(0,3),f=[],miss=[];
+ L.forEach(t=>{const s=D.find(x=>[x.id,x.ref,x.eq].some(v=>v.toLowerCase()==t));s?f.push(s):miss.push(t)});
+ if(f.length<2){note("Enter at least two valid tracking numbers to compare."+(miss.length?" Not found: "+miss.join(", "):""),"e");return}
+ const rows=[["Mode",s=>MODE[s.mode]],["Customer",s=>s.cust],["Origin",s=>s.from],["Destination",s=>s.to],["Reference",s=>s.ref],["Cargo",s=>s.eq],["Carrier",s=>s.car],["ETD",s=>fd(s.etd)],["ETA",s=>fd(s.eta)],["Progress",s=>s.pct+"%"],["Status",s=>`<span class="pill ${cls(s.status)}">${s.status}</span>`]];
+ f.forEach(s=>addRecent(s.id));
+ $("#dr").innerHTML=`<div class="dh"><div><h2>Shipment Comparison</h2><div class="sub">${f.length} shipments${miss.length?" · not found: "+miss.join(", "):""}</div></div><button class="btn" onclick="closeD()">✕</button></div><div class="card" style="overflow-x:auto"><table class="ct"><tr><th></th>${f.map(s=>`<th class="tn">${s.id}</th>`).join("")}</tr>${rows.map(r=>`<tr><th>${r[0]}</th>${f.map(s=>`<td>${r[1](s)}</td>`).join("")}</tr>`).join("")}</table></div>`;
+ $("#dr").classList.add("on");$("#ov").classList.add("on")};
+document.querySelectorAll(".pt").forEach(b=>b.onclick=()=>{document.querySelectorAll(".pt").forEach(x=>x.classList.toggle("on",x==b));$("#fs").style.display=b.dataset.p=="s"?"grid":"none";$("#fc").style.display=b.dataset.p=="c"?"grid":"none";note("")});
+document.addEventListener("click",e=>{const r=e.target.closest("[data-r]");if(r){$("#tq").value=r.dataset.r;go(r.dataset.r)}});
+$("#clr").onclick=e=>{e.preventDefault();tf="";q="";mode="ALL";tab=0;$("#tq").value="";$("#tt").value="";$("#tm").value="any";$("#q").value="";note("");document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("on",n.dataset.m=="ALL"));render()};
+/* ---- Live registration, port receipt & signed handover ---- */
+const E=v=>String(v).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";"),pd=n=>String(n).padStart(2,"0");
+const nowL=()=>{const d=new Date();return d.getFullYear()+"-"+pd(d.getMonth()+1)+"-"+pd(d.getDate())+"T"+pd(d.getHours())+":"+pd(d.getMinutes())};
+const ft=t=>new Date(t).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
+function fin(o){o.seq=ST[o.mode=="AIR"?"air":"sea"];o.status=o.ex?"Exception":o.seq[o.st];o.pct=Math.round(o.st/(o.seq.length-1)*100);return o}
+function persist(){if(VIEWING)return;try{localStorage.setItem("ft_state",JSON.stringify({ns:!D.some(s=>s.smp),a:D.filter(s=>s.added).map(s=>({...s,etd:s.etd.toISOString(),eta:s.eta.toISOString()})),u:Object.fromEntries(D.filter(s=>!s.added&&(s.log||[]).length).map(s=>[s.id,{st:s.st,ex:s.ex,log:s.log}]))}))}catch(e){}if(typeof touchDay=="function")touchDay()}
+function restore(){try{const j=JSON.parse(localStorage.getItem("ft_state")||"null");if(!j)return;if(j.ns)for(let i=D.length-1;i>=0;i--)if(D[i].smp)D.splice(i,1);j.a.forEach(o=>{o.etd=new Date(o.etd);o.eta=new Date(o.eta);const k=D.findIndex(x=>x.id==o.id);if(k>-1)D.splice(k,1);D.push(fin(o))});D.forEach(s=>{const u=j.u[s.id];if(u){s.st=u.st;s.ex=u.ex;s.log=u.log;fin(s)}})}catch(e){}}
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3200)}
+function modal(h){$("#mdl").innerHTML=h;$("#mdl").classList.add("on");$("#ov").classList.add("on")}
+function closeM(){$("#mdl").classList.remove("on");if(!$("#dr").classList.contains("on"))$("#ov").classList.remove("on")}
+function sigPad(id){const c=$("#"+id),x=c.getContext("2d"),r=c.getBoundingClientRect();c.width=r.width*2;c.height=r.height*2;x.scale(2,2);x.lineWidth=2.2;x.lineCap=x.lineJoin="round";x.strokeStyle="#111";let on=false;
+ const p=e=>{const b=c.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+ c.onpointerdown=e=>{on=true;c.setPointerCapture(e.pointerId);x.beginPath();const[a,b]=p(e);x.moveTo(a,b);x.lineTo(a+.1,b+.1);x.stroke();c.dirty=true};
+ c.onpointermove=e=>{if(!on)return;const[a,b]=p(e);x.lineTo(a,b);x.stroke()};
+ c.onpointerup=c.onpointercancel=()=>{on=false};
+ c.clr=()=>{x.clearRect(0,0,9999,9999);c.dirty=false}}
+const sg=(h,n,c,i)=>`<div class="sgc"><small>${h}</small><b>${n}</b>${c?`<div class="sub">${c}</div>`:""}${i?`<img src="${i}" alt="Signature of ${n}">`:'<div class="sub">⚠ Not signed</div>'}</div>`;
+function hand(s){const lg=(s.log||[]).slice().reverse().map(l=>`<div class="lg"><b>${l.ev}</b><div class="sub">${ft(l.t)}${l.loc?" · "+l.loc:""}</div>${l.by||l.to?`<div class="sigs">${l.by?sg("Delivered by",l.by,l.byc,l.bySig):""}${l.to?sg("Received by",l.to,l.toc,l.toSig):""}</div>`:""}${l.note?`<div class="sub" style="margin-top:6px">“${l.note}”</div>`:""}</div>`).join("")||'<div class="sub">No handover records yet.</div>';
+ return `<h3>Port Receipt &amp; Proof of Handover</h3><button class="go" style="width:100%;margin-bottom:12px" onclick="recForm('${s.id}')">✍ Record Port Arrival / Handover</button>${lg}`}
+const TYPES='<option value="FCL|Import">Ocean Import - FCL</option><option value="FCL|Export">Ocean Export - FCL</option><option value="LCL|Import">Ocean Import - LCL</option><option value="LCL|Export">Ocean Export - LCL</option><option value="AIR|Import">Air Freight Import</option><option value="AIR|Export">Air Freight Export</option>';
+function regForm(){if(VIEWING){toast("Archived view is read-only — switch back to Current data first");return}
+ const id="PTL-2026-"+String(Math.max(0,...D.map(s=>+s.id.slice(-6)||0))+1).padStart(6,"0"),t0=nowL().slice(0,10),t1=new Date(Date.now()+14*864e5).toISOString().slice(0,10);
+ modal(`<div class="dh"><div><h2>Register New Shipment</h2><div class="sub">Instant registration · Tracking No. <b class="tn">${id}</b></div></div><button class="btn" onclick="closeM()">✕</button></div>
+ <form id="rf" autocomplete="off"><div class="fg">
+ <div class="fl"><label>Shipment Type *</label><select id="r-t">${TYPES}</select></div>
+ <div class="fl"><label>Customer / Consignee *</label><input id="r-c" required></div>
+ <div class="fl"><label>Origin *</label><input id="r-o" placeholder="e.g. Shanghai, CN" required></div>
+ <div class="fl"><label>Destination *</label><input id="r-p" placeholder="e.g. Karachi, PK" required></div>
+ <div class="fl"><label>B/L · HBL · AWB No. *</label><input id="r-r" required></div>
+ <div class="fl"><label>Container / Cargo details</label><input id="r-e" placeholder="MSCU1234567 · 40HC  or  6 CBM · 1,200 kg"></div>
+ <div class="fl"><label>Vessel / Flight</label><input id="r-v"></div>
+ <div class="fl"><label>Current Stage</label><select id="r-s"><option>Booked</option><option>Cargo Received</option><option>Departed</option><option>In Transit</option><option>Arrived</option></select></div>
+ <div class="fl"><label>ETD *</label><input type="date" id="r-d1" value="${t0}" required></div>
+ <div class="fl"><label>ETA *</label><input type="date" id="r-d2" value="${t1}" required></div></div>
+ <div class="alert" id="rerr"></div>
+ <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px"><button type="button" class="btn" onclick="closeM()">Cancel</button><button class="go" type="submit">✔ Register Shipment</button></div></form>`);
+ $("#rf").onsubmit=e=>{e.preventDefault();const [m,d]=$("#r-t").value.split("|"),g=k=>E($("#r-"+k).value.trim()),etd=new Date($("#r-d1").value),eta=new Date($("#r-d2").value);
+  if(eta<etd){const x=$("#rerr");x.textContent="ETA cannot be earlier than ETD.";x.className="alert e";x.style.display="block";return}
+  const o=fin({id,mode:m,dir:d,cust:g("c"),from:g("o"),to:g("p"),ref:g("r"),eq:g("e")||"—",car:g("v")||"—",etd,eta,st:0,ex:false,added:true,
+   log:[{t:new Date().toISOString(),ev:"Shipment registered",note:"Registered on the spot"}]});
+  const i=o.seq.indexOf($("#r-s").value);o.st=i<0?2:i;fin(o);D.push(o);persist();
+  closeM();tab=0;mode="ALL";tf="";q="";$("#q").value="";document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("on",n.dataset.m=="ALL"));
+  render();addRecent(o.id);open(o.id);toast("Shipment "+o.id+" registered")}}
+function recForm(sid){if(VIEWING){toast("Archived view is read-only — switch back to Current data first");return}const s=D.find(x=>x.id==sid);
+ modal(`<div class="dh"><div><h2>Record Port Arrival &amp; Handover</h2><div class="sub"><span class="tn">${s.id}</span> · ${s.from} → ${s.to}</div></div><button class="btn" onclick="closeM()">✕</button></div>
+ <form id="hf" autocomplete="off"><div class="fg">
+ <div class="fl"><label>Event *</label><select id="h-ev"><option value="port">Reached destination port / airport</option><option value="recv">Cargo received at port / CFS / terminal</option><option value="deliv">Delivered to end user</option><option value="hand">Handover between parties (no status change)</option></select></div>
+ <div class="fl"><label>Date &amp; Time *</label><input type="datetime-local" id="h-t" value="${nowL()}" required></div>
+ <div class="fl"><label>Location</label><input id="h-l" value="${s.to}"></div>
+ <div class="fl"><label>Remarks</label><input id="h-n" placeholder="e.g. Seal intact, 24/24 packages"></div></div>
+ <div class="fg"><div class="sb"><h3>Delivered by</h3><div class="fl"><label>Full name</label><input id="h-b"></div><div class="fl"><label>Company / ID no.</label><input id="h-bc"></div><div class="fl"><label>Signature</label><canvas class="sig" id="sg1"></canvas></div><button type="button" class="btn" onclick="$('#sg1').clr()">Clear signature</button></div>
+ <div class="sb"><h3>Received by</h3><div class="fl"><label>Full name</label><input id="h-r"></div><div class="fl"><label>CNIC / ID no.</label><input id="h-rc"></div><div class="fl"><label>Signature</label><canvas class="sig" id="sg2"></canvas></div><button type="button" class="btn" onclick="$('#sg2').clr()">Clear signature</button></div></div>
+ <div class="alert" id="rerr"></div>
+ <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px"><button type="button" class="btn" onclick="closeM()">Cancel</button><button class="go" type="submit">✔ Save Record</button></div></form>`);
+ sigPad("sg1");sigPad("sg2");
+ $("#hf").onsubmit=e=>{e.preventDefault();const g=k=>E($("#h-"+k).value.trim()),ev=$("#h-ev").value,by=g("b"),to=g("r"),s1=$("#sg1"),s2=$("#sg2"),bad=m=>{const x=$("#rerr");x.textContent=m;x.className="alert e";x.style.display="block"};
+  if(!by&&!to)return bad("Enter the name of the person who delivered and/or received the cargo.");
+  if(by&&!s1.dirty&&ev=="deliv")return bad("Delivery signature is required for end-user delivery.");
+  if(ev=="deliv"&&(!to||!s2.dirty))return bad("End-user delivery needs the receiver's name and signature.");
+  const L={port:"Reached destination "+(s.mode=="AIR"?"airport":"port"),recv:"Cargo received at "+(s.mode=="AIR"?"cargo terminal":"port / CFS"),deliv:"Delivered to end user",hand:"Handover recorded"}[ev];
+  s.log=s.log||[];s.log.push({t:new Date($("#h-t").value).toISOString(),ev:L,loc:g("l"),note:g("n"),by,byc:g("bc"),bySig:by&&s1.dirty?s1.toDataURL("image/png"):"",to,toc:g("rc"),toSig:to&&s2.dirty?s2.toDataURL("image/png"):""});
+  const tg={port:"Arrived",recv:"Arrived",deliv:"Delivered"}[ev];if(tg){s.st=Math.max(s.st,s.seq.indexOf(tg));if(ev=="deliv")s.ex=false}
+  fin(s);persist();closeM();render();open(s.id);toast(L+" — saved")}}
+/* ---- Live Excel / CSV import ---- */
+function refreshUI(){const f=D[0],e=!D.length;drawSamples();drawRecent();drawDays();srcBar();
+ $("#qh").textContent=e?"🎯 No shipments yet":"🎯 Live Shipments — click a card to open its full record";$(".qt").style.display=e?"none":"";
+ $("#exc").textContent=f?f.id:"—";$("#tq").placeholder="e.g. "+(f?f.id:"tracking number");
+ $("#xo").innerHTML=e?"IMPORT DATA":'<span class="live"></span>IMPORT DATA';
+ $("#bd").innerHTML=e?'<span class="pill s-cust">NO DATA YET</span> <span class="sub">Upload an Excel / CSV file — it becomes your live data and is saved as today\'s record.</span>':'<span class="pill s-ok">● LIVE DATA</span> <span class="sub">'+D.length+' shipment(s) · '+E(SRC)+'</span>'}
+const NK=k=>String(k).toLowerCase().replace(/[^a-z0-9]/g,"");
+const RX=[["id",/track|shipmentno|shipmentid|^id$|jobno|fileno|bookingno/],["mode",/mode|loadtype|shipmenttype|^type$|service/],["dir",/direction|importexport|impexp|movement/],["cust",/customer|consignee|client|shipper/],["from",/origin|pol|loading|^from|source/],["to",/destination|pod|discharge|^to$|finaldest/],["ref",/^bl|bol|bill|hbl|mbl|awb|waybill|^reference/],["eq",/container|equipment|cargo|packages|cbm/],["car",/vessel|flight|carrier|voyage|airline/],["etd",/^etd|etd$|estimateddep|departure|sailing/],["eta",/^eta|eta$|estimatedarr|arrival/],["st",/status|stage|milestone/]];
+const LBL={id:"Tracking No",mode:"Mode",dir:"Direction",cust:"Customer",from:"Origin",to:"Destination",ref:"B/L · AWB",eq:"Container / Cargo",car:"Vessel / Flight",etd:"ETD",eta:"ETA",st:"Status"};
+function colKey(c){const n=NK(c);if(!n)return"";for(const[k,r]of RX)if(r.test(n))return k;return""}
+function toD(v){if(v instanceof Date)return isNaN(v)?null:(w=>new Date(w.getFullYear(),w.getMonth(),w.getDate()))(new Date(+v+12*36e5));
+ if(typeof v=="number"){const u=new Date(Math.round((v-25569)*864e5));return new Date(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate())}
+ const s=String(v).trim();if(!s)return null;let m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);if(m)return new Date(+m[3],m[2]-1,+m[1]);
+ m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return new Date(+m[1],m[2]-1,+m[3]);const d=new Date(s);return isNaN(d)?null:d}
+function stg(t,seq){t=String(t).toLowerCase();let n="Booked";const ex=/exception|delay|hold|damag/.test(t);
+ if(/out for/.test(t))n="Customs Clearance";else if(/deliver/.test(t))n="Delivered";else if(/custom|clear/.test(t))n="Customs Clearance";else if(/arriv|reached|discharg|port|landed/.test(t))n="Arrived";else if(/transit|sail|flight|on board|onboard/.test(t))n="In Transit";else if(/depart|ship|load/.test(t))n="Departed";else if(/receiv|cfs|gate/.test(t))n="Cargo Received";
+ let i=seq.indexOf(n);if(i<0)i=2;return[i,ex]}
+let SRC="Earlier data";try{SRC=localStorage.getItem("ft_src")||SRC}catch(e){}
+let SRCT="";try{SRCT=localStorage.getItem("ft_srct")||""}catch(e){}
+const dk=d=>{d=new Date(d);return d.getFullYear()+"-"+pd(d.getMonth()+1)+"-"+pd(d.getDate())};
+const fmtDay=d=>new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"2-digit",month:"short",year:"numeric"}),tm=t=>new Date(t).toLocaleTimeString("en-GB");
+let DAYS={},VIEWING=false;try{DAYS=JSON.parse(localStorage.getItem("ft_days")||"{}")}catch(e){}
+const snap=s=>({id:s.id,mode:s.mode,dir:s.dir,cust:s.cust,from:s.from,to:s.to,ref:s.ref,eq:s.eq,car:s.car,etd:+s.etd,eta:+s.eta,st:s.st,ex:s.ex}),des=o=>fin({...o,etd:new Date(o.etd),eta:new Date(o.eta)});
+function saveDays(){try{localStorage.setItem("ft_src",SRC);localStorage.setItem("ft_srct",SRCT)}catch(e){}for(;;){try{localStorage.setItem("ft_days",JSON.stringify(DAYS));return}catch(e){const k=Object.keys(DAYS).sort();if(k.length<2)return;delete DAYS[k[0]]}}}
+function recordDay(name,log){if(!D.length)return;const k=dk(new Date()),e=DAYS[k]||(DAYS[k]={uploads:[]});e.t=new Date().toISOString();e.name=name;e.rows=D.map(snap);if(log)e.uploads.push({t:e.t,name,n:D.length});const ks=Object.keys(DAYS).sort();while(ks.length>60)delete DAYS[ks.shift()];saveDays()}
+function touchDay(){const e=DAYS[dk(new Date())];if(e&&D.length&&!VIEWING){e.rows=D.map(snap);saveDays()}}
+function drawDays(){const k=Object.keys(DAYS).sort().reverse();$("#ar").innerHTML=k.length?k.map(d=>{const e=DAYS[d];return `<div class="ab"><div><b>${fmtDay(d)}</b><div class="sub">${E(e.name)} · ${e.rows.length} shipments · last update ${tm(e.t)} · ${e.uploads.length} upload(s)</div></div><button class="btn" type="button" data-day="${d}">View</button></div>`}).join(""):'<div class="sub">No daily records yet. Each day\'s latest upload is saved here automatically.</div>'}
+$("#ar").onclick=e=>{const r=e.target.closest("[data-day]");if(!r)return;const x=DAYS[r.dataset.day];if(!x)return;viewRows(x.rows,x.name,"record of "+fmtDay(r.dataset.day),"day");closeX();toast("Viewing record of "+fmtDay(r.dataset.day))};
+let RAW=null;try{RAW=JSON.parse(localStorage.getItem("ft_raw")||"null")}catch(e){}
+const cell=o=>c=>{const v=o[c];return v instanceof Date?fd(toD(v)):String(v==null?"":v)};
+function xvDraw(){const xv=$("#xv");$("#tb").closest(".sc").style.display=XV?"none":"";xv.style.display=XV?"block":"none";if(!XV)return;$("#em").style.display="none";
+ if(VIEWING||!RAW){xv.innerHTML='<div class="empty">'+(VIEWING?"Excel sheet view is available for the latest import — switch back to Current data.":"Import an Excel file to see it here exactly as it appears in your sheet.")+'</div>';return}
+ const t=q.toLowerCase(),R=RAW.r.map((r,i)=>[i,r]).filter(x=>!t||x[1].join(" ").toLowerCase().includes(t));
+ xv.innerHTML='<table><thead><tr><th>#</th>'+RAW.h.map(c=>'<th>'+E(c)+'</th>').join("")+'</tr></thead><tbody>'+R.map(x=>'<tr><td style="color:var(--mu);font-weight:700">'+(x[0]+1)+'</td>'+x[1].map(v=>'<td>'+E(v)+'</td>').join("")+'</tr>').join("")+'</tbody></table><div class="sub" style="padding:10px 16px">'+E(RAW.name)+' · '+RAW.r.length+' rows · original column and row order</div>'}
+$("#chips").addEventListener("click",e=>{const o=e.target.closest("[data-so],[data-xv]");if(!o)return;if(o.dataset.so)SORT=o.dataset.so;else XV=o.dataset.xv=="1";render()});
+let PREV=null,LIVE=null;try{PREV=JSON.parse(localStorage.getItem("ft_prev")||"null")}catch(e){}
+function savePrev(){try{localStorage.setItem("ft_prev",JSON.stringify(PREV))}catch(e){}}
+function setPrev(){PREV={name:SRC,t:SRCT,at:new Date().toISOString(),rows:D.map(snap)};savePrev()}
+function viewRows(rows,name,label,kind){if(!VIEWING)LIVE={rows:D.slice(),src:SRC,last:LAST,srct:SRCT};D.length=0;rows.forEach(o=>D.push({...des(o),added:true,imp:true,log:[]}));SRC=name;LAST=label;VIEWING=kind;tab=0;mode="ALL";tf="";q="";$("#q").value="";render();refreshUI()}
+function showCur(){if(!VIEWING||!LIVE){VIEWING=false;return}D.length=0;LIVE.rows.forEach(s=>D.push(s));SRC=LIVE.src;LAST=LIVE.last;SRCT=LIVE.srct;LIVE=null;VIEWING=false;tab=0;render();refreshUI()}
+function showPrev(){if(PREV)viewRows(PREV.rows,PREV.name,"replaced "+ft(PREV.at),"prev")}
+function srcBar(){const cur=VIEWING&&LIVE?LIVE.rows.length:D.length;
+ const seg=PREV?`<span class="seg"><button type="button" data-v="cur" class="${VIEWING?"":"on"}">Current data · ${cur}</button><button type="button" data-v="prev" class="${VIEWING=="prev"?"on":""}">Previous data · ${PREV.rows.length}</button></span>`:"";
+ const ub='<button class="btn" type="button" onclick="$(\'#xo\').click()">Update data</button>';
+ $("#srcbar").innerHTML=!D.length&&!PREV?'<span class="pill s-cust">NO DATA YET</span><span>Click <b>IMPORT DATA</b> and upload your Excel file — it becomes live tracking data and is saved as today\'s record.</span><button class="btn" type="button" onclick="$(\'#xo\').click()">Import now</button>':VIEWING?'<span class="pill s-cust">ARCHIVED · '+(VIEWING=="prev"?"PREVIOUS DATA":"DAILY RECORD")+'</span><span><b>'+E(SRC)+'</b> · '+D.length+' shipments · '+E(LAST)+'</span>'+seg+'<button class="btn" type="button" data-v="cur">← Back to current data</button>':'<span class="pill s-ok">● LIVE DATA</span><span><b>'+E(SRC)+'</b> · '+D.length+' shipments · updated '+(LAST||"earlier")+(H?' · <span class="live"></span>auto-sync ON':"")+'</span>'+seg+ub}
+$("#srcbar").onclick=e=>{const b=e.target.closest("[data-v]");if(!b)return;b.dataset.v=="prev"?showPrev():showCur()};
+function cmpHTML(){const cur=VIEWING&&LIVE?LIVE.rows:D;if(!PREV||!cur.length)return'<div class="empty">Upload data twice to compare. After every new upload, the data it replaced is kept as <b>Previous data</b>.</div>';
+ const pv=PREV.rows.map(des),pm={},cm={};pv.forEach(s=>pm[s.id]=s);cur.forEach(s=>cm[s.id]=s);
+ const nw=cur.filter(s=>!pm[s.id]),rm=pv.filter(s=>!cm[s.id]),chg=cur.filter(s=>pm[s.id]&&(s.st!=pm[s.id].st||s.ex!=pm[s.id].ex)),cp=cnt(pv),cc=cnt(cur);
+ const bx=(t,a,f)=>`<div class="bx"><h4>${t} · ${a.length}</h4>${a.slice(0,8).map(f).join("")||'<div class="sub">None</div>'}${a.length>8?'<div class="sub">+ '+(a.length-8)+' more</div>':""}</div>`;
+ const R=[["Pending","pend"],["In transit","tran"],["Arrived / Customs","cust"],["Delivered","del"],["Exceptions","ex"],["Total","n"]];
+ return `<div class="g2" style="margin-top:0"><div class="bx"><h4>Previous data</h4><b style="font-size:17px">${E(PREV.name)}</b><div class="sub">${cp.n} shipments · replaced ${ft(PREV.at)}</div></div><div class="bx"><h4>Current data</h4><b style="font-size:17px">${E(SRC===PREV.name&&VIEWING?LIVE.src:(VIEWING&&LIVE?LIVE.src:SRC))}</b><div class="sub">${cc.n} shipments</div></div></div>
+ <div class="g2"><div class="bx"><h4>Status comparison</h4><table class="dt"><tr><th>Status</th><th>Previous</th><th>Current</th><th>Change</th></tr>${R.map(r=>{const d=cc[r[1]]-cp[r[1]];return `<tr><td>${r[0]}</td><td>${cp[r[1]]}</td><td><b>${cc[r[1]]}</b></td><td style="font-weight:700;color:${d>0?"var(--ok)":d<0?"var(--er)":"var(--mu)"}">${d>0?"+"+d:d}</td></tr>`}).join("")}</table></div>
+ ${bx("New in current data",nw,s=>`<div class="sub"><b class="tn">${s.id}</b> ${s.from} → ${s.to}</div>`)}${bx("Status changed",chg,s=>`<div class="sub"><b class="tn">${s.id}</b> ${pm[s.id].status} → <b>${s.status}</b></div>`)}${bx("Removed from current data",rm,s=>`<div class="sub"><b class="tn">${s.id}</b> ${pm[s.id].status}</div>`)}</div>`}
+$("#rfb").onclick=async()=>{if(VIEWING)showCur();try{if(H){const f=await H.getFile();ingest(await f.arrayBuffer(),f.name,"replace","array",true);LM=f.lastModified}}catch(e){note("Could not re-read the live file — it may have been moved or closed.","e")}render();refreshUI();if($("#db").classList.contains("on"))drawDB();toast("Refreshed · "+D.length+" shipments · "+tm(Date.now()))};
+/* ---- Dashboard & day-wise report window ---- */
+let DT="d",SELD="";
+const cnt=L=>{const o={n:L.length,FCL:0,LCL:0,AIR:0};L.forEach(s=>o[s.mode]++);[["pend",1],["tran",2],["cust",3],["del",4],["ex",5]].forEach(([k,i])=>o[k]=L.filter(TABS[i][1]).length);return o};
+const hb=(l,v,m,c)=>`<div class="hb"><span>${l}</span><div><i style="width:${Math.max(v?3:0,v/m*100)}%${c?";background:"+c:""}"></i></div><b>${v}</b></div>`;
+const topN=(L,f,n)=>{const m={};L.forEach(s=>{const k=f(s);m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,n)};
+function dashHTML(){const L=D;if(!L.length)return'<div class="empty">No live data yet. Click <b>IMPORT DATA</b> and upload your Excel file.</div>';
+ const c=cnt(L),od=L.filter(s=>s.status!="Delivered"&&s.eta<TODAY),K=[["Total shipments",c.n,"#4f46e5","📦"],["In transit",c.tran,"#0ea5e9","🚢"],["Arrived / Customs",c.cust,"#d97706","🛃"],["Delivered",c.del,"#16a34a","✅"],["Exceptions",c.ex,"#dc2626","⚠️"],["Overdue (past ETA)",od.length,"#9333ea","⏰"]],
+ S=[["Pending",c.pend,"#94a3b8"],["In transit",c.tran,"#0ea5e9"],["Arrived / Customs",c.cust,"#d97706"],["Delivered",c.del,"#16a34a"],["Exceptions",c.ex,"#dc2626"]],mx=Math.max(1,...S.map(x=>x[1])),
+ W=L.filter(s=>s.status!="Delivered").sort((a,b)=>a.eta-b.eta).slice(0,8);
+ return `<div class="kpis">${K.map(k=>`<div class="kpi" style="--c:${k[2]};--i:'${k[3]}'"><span>${k[0]}</span><b>${k[1]}</b></div>`).join("")}</div>
+ <div class="g2"><div class="bx"><h4>Shipment status</h4>${S.map(x=>hb(x[0],x[1],mx,x[2])).join("")}</div>
+ <div class="bx"><h4>Mode × direction</h4><table class="dt"><tr><th>Mode</th><th>Import</th><th>Export</th><th>Total</th></tr>${["FCL","LCL","AIR"].map(m=>`<tr><td><span class="pill m-${m}">${m}</span></td><td>${L.filter(s=>s.mode==m&&s.dir=="Import").length}</td><td>${L.filter(s=>s.mode==m&&s.dir=="Export").length}</td><td><b>${c[m]}</b></td></tr>`).join("")}</table></div>
+ <div class="bx"><h4>Top routes</h4>${topN(L,s=>s.from+" → "+s.to,6).map(x=>hb(x[0],x[1],L.length)).join("")}</div>
+ <div class="bx"><h4>Top customers</h4>${topN(L,s=>s.cust,6).map(x=>hb(x[0],x[1],L.length)).join("")}</div>
+ <div class="bx" style="grid-column:1/-1;overflow-x:auto"><h4>ETA watch-list (next due / overdue)</h4><table class="dt"><tr><th>Shipment</th><th>Mode</th><th>Route</th><th>ETA</th><th>Due</th><th>Status</th></tr>${W.map(s=>{const d=Math.ceil((s.eta-TODAY)/864e5);return `<tr><td class="tn">${s.id}</td><td>${s.mode}</td><td>${s.from} → ${s.to}</td><td>${fd(s.eta)}</td><td style="color:${d<0?"var(--er)":"inherit"};font-weight:700">${d<0?-d+" day(s) overdue":d==0?"Today":d+" day(s)"}</td><td><span class="pill ${cls(s.status)}">${s.status}</span></td></tr>`}).join("")}</table></div></div>`}
+function repHTML(){const ks=Object.keys(DAYS).sort();if(!ks.length)return'<div class="empty">No daily records yet. Import an Excel file — each day\'s latest upload is saved here with its upload times.</div>';
+ const sel=ks.includes(SELD)?SELD:ks[ks.length-1],i=ks.indexOf(sel),e=DAYS[sel],cur=e.rows.map(des),prev=i>0?DAYS[ks[i-1]].rows.map(des):null,pm={};if(prev)prev.forEach(s=>pm[s.id]=s);
+ const cm={};cur.forEach(s=>cm[s.id]=s);const nw=prev?cur.filter(s=>!pm[s.id]):[],rm=prev?prev.filter(s=>!cm[s.id]):[],pr=prev?cur.filter(s=>pm[s.id]&&s.st>pm[s.id].st):[],dl=pr.filter(s=>s.status=="Delivered");
+ const ch=(t,a,f)=>`<div class="bx"><h4>${t} · ${a.length}</h4>${a.slice(0,6).map(f).join("")||'<div class="sub">None</div>'}${a.length>6?'<div class="sub">+ '+(a.length-6)+' more</div>':""}</div>`;
+ return `<div class="bx" style="overflow-x:auto"><h4>Daily summary — one record per day (latest upload of the day)</h4><table class="dt"><tr><th>Date</th><th>Last updated</th><th>Uploads</th><th>Shipments</th><th>FCL</th><th>LCL</th><th>Air</th><th>In transit</th><th>Arrived/Customs</th><th>Delivered</th><th>Exceptions</th></tr>${ks.slice().reverse().map(d=>{const x=DAYS[d],c=cnt(x.rows.map(des));return `<tr class="dr ${d==sel?"sl":""}" data-rd="${d}"><td><b>${fmtDay(d)}</b></td><td>${tm(x.t)}</td><td>${x.uploads.length}</td><td><b>${c.n}</b></td><td>${c.FCL}</td><td>${c.LCL}</td><td>${c.AIR}</td><td>${c.tran}</td><td>${c.cust}</td><td>${c.del}</td><td>${c.ex}</td></tr>`}).join("")}</table><div class="sub" style="margin-top:8px">Click a row to open that day's detailed report.</div></div>
+ <h3 style="margin:20px 0 8px">Report for ${fmtDay(sel)}</h3>
+ <div class="g2"><div class="bx"><h4>Upload log (time-wise)</h4><table class="dt"><tr><th>Time</th><th>File</th><th>Shipments</th></tr>${e.uploads.slice().sort((a,b)=>a.t<b.t?-1:1).map(u=>`<tr><td>${tm(u.t)}</td><td>${E(u.name)}</td><td>${u.n}</td></tr>`).join("")}</table></div>
+ ${prev?ch("New since "+fmtDay(ks[i-1]),nw,s=>`<div class="sub"><b class="tn">${s.id}</b> ${s.from} → ${s.to}</div>`)+ch("Progressed",pr,s=>`<div class="sub"><b class="tn">${s.id}</b> ${pm[s.id].status} → <b>${s.status}</b></div>`)+ch("Delivered since",dl,s=>`<div class="sub"><b class="tn">${s.id}</b> ${s.from} → ${s.to}</div>`)+ch("Dropped from file",rm,s=>`<div class="sub"><b class="tn">${s.id}</b> ${pm[s.id].status}</div>`):'<div class="bx"><h4>Day-over-day changes</h4><div class="sub">This is the first recorded day — changes appear from the next day.</div></div>'}</div>
+ <div class="bx" style="margin-top:16px;overflow-x:auto"><h4>Shipments on ${fmtDay(sel)} · ${cur.length}</h4><table class="dt"><tr><th>Shipment</th><th>Mode</th><th>Route</th><th>Reference</th><th>ETA</th><th>Status</th></tr>${cur.slice(0,150).map(s=>`<tr><td class="tn">${s.id}</td><td>${s.mode} · ${s.dir}</td><td>${s.from} → ${s.to}</td><td>${s.ref}</td><td>${fd(s.eta)}</td><td><span class="pill ${cls(s.status)}">${s.status}</span></td></tr>`).join("")}</table>${cur.length>150?'<div class="sub">Showing first 150 of '+cur.length+'.</div>':""}</div>`}
+function drawDB(){$("#db").innerHTML=`<div class="dbh"><h2>📈 Operations Dashboard &amp; Reports</h2><span class="sub" style="color:#c7d2fe">${E(SRC)} · ${D.length} shipments · ${new Date().toLocaleString("en-GB")}</span><button class="btn" type="button" onclick="document.body.classList.add('pdb');print();document.body.classList.remove('pdb')">🖨 Print</button><button class="btn" type="button" onclick="closeD()">✕ Close</button></div><div class="dbt"><button class="pt ${DT=="d"?"on":""}" data-dt="d">Live Dashboard</button><button class="pt ${DT=="r"?"on":""}" data-dt="r">Day-wise Report</button><button class="pt ${DT=="p"?"on":""}" data-dt="p">Previous vs Current</button></div><div class="dbb">${DT=="d"?dashHTML():DT=="r"?repHTML():cmpHTML()}</div>`}
+$("#dbo").onclick=()=>{$("#db").classList.add("on");$("#ov").classList.add("on");drawDB()};
+$("#db").onclick=e=>{const t=e.target.closest("[data-dt],[data-rd]");if(!t)return;if(t.dataset.dt)DT=t.dataset.dt;else SELD=t.dataset.rd;drawDB()};
+let LAST="";
+function withX(cb){if(window.XLSX)return cb();const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";s.onload=cb;s.onerror=()=>note("The Excel reader could not load (no access to the script host). Check your connection and try again.","e");document.head.appendChild(s)}
+function sheetRows(wb){const A=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:"",raw:true,blankrows:false});
+ let hi=0,best=-1;A.slice(0,25).forEach((r,i)=>{const sc=new Set(r.map(colKey).filter(Boolean)).size;if(sc>best){best=sc;hi=i}});
+ const Hd=(A[hi]||[]).map(c=>String(c).trim()),M={};Hd.forEach(c=>{const k=colKey(c);if(k)(M[k]=M[k]||[]).push(c)});
+ const rows=A.slice(hi+1).filter(r=>r.some(c=>String(c).trim()!=="")).map(r=>{const o={};Hd.forEach((c,i)=>{if(c&&o[c]===undefined)o[c]=r[i]});return o});
+ return{rows,M,best,Hd}}
+function viewList(){closeX();$("#tb").scrollIntoView({behavior:"smooth",block:"center"})}
+function ingest(data,name,how,opt,quiet){withX(()=>{
+ let S;try{S=sheetRows(XLSX.read(data,{type:opt,cellDates:true}))}catch(e){note("This file could not be read. Use a valid .xlsx, .xls or .csv file.","e");return}
+ const{rows,M,best,Hd}=S;
+ if(best<2){note("Couldn't recognise the column headings (found: "+(Hd.filter(Boolean).slice(0,6).join(", ")||"none")+"). Expected headings like Tracking No, Origin, Destination, ETD, ETA, Status.","e");return}
+ if(!rows.length){note("The sheet has headings but no data rows.","e");return}
+ const gv=(r,k)=>{for(const c of M[k]||[]){if(String(r[c]??"").trim()!=="")return r[c]}return""},fresh=[],seen={};let dup=0;const uniq=b=>{let u=b,k=1;while(seen[u])u=b+" ("+(++k)+")";if(u!=b)dup++;seen[u]=1;return u};
+ rows.forEach((r,i)=>{const g=k=>E(String(gv(r,k)).trim()),id0=g("id")||g("ref")||g("eq")||"SHP-"+String(i+1).padStart(4,"0"),id=uniq(id0),
+  t=[gv(r,"mode"),gv(r,"dir")].join(" ").toLowerCase(),car=String(gv(r,"car")).trim(),eqs=String(gv(r,"eq")).toLowerCase(),
+  mo=/air/.test(t)?"AIR":/lcl/.test(t)?"LCL":/fcl|ocean|sea/.test(t)?"FCL":/cbm/.test(eqs)?"LCL":/^[a-z0-9]{2}[- ]?\d{2,4}$/i.test(car)?"AIR":"FCL",
+  dr=/export/.test(t)?"Export":"Import",etd=toD(gv(r,"etd"))||new Date(),eta=toD(gv(r,"eta"))||new Date(+etd+14*864e5),
+  [si,ex]=stg(gv(r,"st"),ST[mo=="AIR"?"air":"sea"]),old=D.find(x=>x.id==id&&x.imp);
+  fresh.push(fin({id,mode:mo,dir:dr,cust:g("cust")||"—",from:g("from")||"—",to:g("to")||"—",ref:g("ref")||"—",eq:g("eq")||"—",car:g("car")||"—",etd,eta,st:si,ex,ord:i,added:true,imp:true,log:old&&old.log?old.log:[{t:new Date().toISOString(),ev:"Imported from "+E(name),note:"Excel import"}]}))});
+ if(VIEWING)showCur();const hadPrev=D.length;if(hadPrev)setPrev();
+ RAW={name,h:Hd.filter(Boolean),r:rows.map(o=>Hd.filter(Boolean).map(cell(o)))};try{localStorage.setItem("ft_raw",JSON.stringify(RAW))}catch(e){}
+ D.length=0;fresh.forEach(o=>D.push(o));SRC=name;SRCT=new Date().toISOString();LAST=new Date().toLocaleTimeString("en-GB");persist();VIEWING=false;recordDay(name,true);
+ if(!quiet){SORT="file";tab=0;mode="ALL";tf="";q="";$("#q").value="";document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("on",x.dataset.m=="ALL"));$("#xn").style.display="none"}
+ render();refreshUI();
+ const miss=Object.keys(LBL).filter(k=>!M[k]).map(k=>LBL[k]);
+ $("#xl").innerHTML=quiet?'<span class="live"></span>LIVE · '+E(name)+' · '+fresh.length+' shipments · synced '+LAST:'<div class="okc"><b>✔ Loaded '+fresh.length+' of '+rows.length+' row(s) from '+E(name)+'</b><div class="sub">'+(dup?dup+' repeated tracking number(s) kept as separate rows. ':'')+(hadPrev?'Previous data replaced; today\'s record saved. ':'Saved as today\'s record. ')+'Detected: '+Object.keys(M).map(k=>LBL[k]).join(", ")+'.'+(miss.length?' Not found (defaults used): '+miss.join(", ")+'.':'')+'</div><button class="go" type="button" style="width:100%;height:42px;margin-top:10px" onclick="viewList()">View shipments →</button></div>';
+ if(!quiet)toast("Loaded "+fresh.length+" shipment(s) from "+name)})}
+
+let H=null,LM=0,TM=null;
+const rf2=f=>f&&f.arrayBuffer().then(b=>ingest(b,f.name,$("#xm").value,"array")).catch(()=>note("Could not read this file.","e"));
+$("#xf").onchange=e=>{rf2(e.target.files[0]);e.target.value=""};
+const dz=$("#dz");dz.ondragover=e=>{e.preventDefault();dz.classList.add("ov")};dz.ondragleave=()=>dz.classList.remove("ov");dz.ondrop=e=>{e.preventDefault();dz.classList.remove("ov");rf2(e.dataTransfer.files[0])};
+$("#xi").onclick=()=>{const v=$("#xp").value.trim();v?ingest(v,"Pasted data",$("#xm").value,"string"):note("Paste rows copied from Excel first.","e")};
+$("#xt").onclick=()=>{$("#xp").value=["Tracking No\tMode\tDirection\tCustomer\tOrigin\tDestination\tB/L or AWB\tContainer / Cargo\tVessel / Flight\tETD\tETA\tStatus","PTL-2026-000101\tFCL\tImport\tNova Traders\tShanghai, CN\tKarachi, PK\tBL-2026-101\tMSCU7001234 · 40HC\tMSC Rhea VY-501\t2026-10-01\t2026-10-28\tIn Transit","PTL-2026-000102\tAir\tExport\tAl Noor Textiles\tKarachi, PK\tLondon, UK\tAWB 176-55501234\t30 pcs · 640 kg\tEmirates EK-613\t2026-10-09\t2026-10-12\tDeparted","PTL-2026-000103\tLCL\tImport\tHaleem Foods\tDubai, UAE\tKarachi, PK\tHBL-2026-103\t4.2 CBM · 980 kg\tMaersk Aden VY-330\t2026-09-20\t2026-10-10\tCustoms Clearance"].join("\n");note("Sample loaded — click “Import pasted data”, or copy it into Excel to build your own sheet.","i")};
+function stopLive(){clearInterval(TM);H=null;LM=0;$("#xw").style.display="";$("#xs").style.display="none";$("#xl").textContent="Live sync stopped. Imported shipments remain in the dashboard."}
+async function syncLive(first){try{const f=await H.getFile();if(!first&&f.lastModified==LM)return;LM=f.lastModified;ingest(await f.arrayBuffer(),f.name,"replace","array",!first);if(first)note("Live sync started — the dashboard refreshes every few seconds whenever you save the Excel file.","i")}catch(e){stopLive();note("Lost access to the live file (it may be closed or moved).","e")}}
+$("#xw").onclick=async()=>{if(!window.showOpenFilePicker){note("Live file watching needs desktop Chrome or Edge. Use Upload or Paste instead.","e");return}
+ try{[H]=await showOpenFilePicker({types:[{description:"Excel / CSV",accept:{"application/vnd.ms-excel":[".xlsx",".xls",".csv"]}}]})}catch(e){H=null;if(e.name!="AbortError")note("This browser view blocked live file access. Open the page in its own tab, or use Upload / Paste.","e");return}
+ $("#xw").style.display="none";$("#xs").style.display="";await syncLive(true);TM=setInterval(()=>syncLive(false),4000)};
+$("#xs").onclick=stopLive;
+restore();
+if(D.length&&!Object.keys(DAYS).length)recordDay(SRC==="Earlier data"?"Earlier import":SRC,true);
+$("#xo").onclick=()=>{note("");$("#fx").classList.add("on");$("#ov").classList.add("on")};
+const CZ=[["Karachi","Asia/Karachi"],["Dubai","Asia/Dubai"],["London","Europe/London"],["UTC","UTC"]];
+function clk(){$("#clk").innerHTML=CZ.map(c=>`<div><small>${c[0].toUpperCase()}</small><b>${new Date().toLocaleTimeString("en-GB",{timeZone:c[1],hour:"2-digit",minute:"2-digit",second:"2-digit"})}</b></div>`).join("")}
+function mix(){const n={FCL:0,LCL:0,AIR:0};D.forEach(s=>n[s.mode]++);const t=D.length||1,L=[["FCL","Ocean FCL"],["LCL","Ocean LCL"],["AIR","Air Freight"]];
+ $("#mix").innerHTML='<div class="mb">'+L.map(m=>`<i class="m${m[0]}" style="width:${n[m[0]]/t*100}%"></i>`).join("")+'</div><div class="ml">'+L.map(m=>`<span><i class="m${m[0]}"></i>${m[1]} · <b>${n[m[0]]}</b></span>`).join("")+"</div>"}
+const _rn=render;render=function(){_rn();mix()};
+clk();setInterval(clk,1000);refreshUI();render();
+</script></body></html>
